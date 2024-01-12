@@ -1,27 +1,20 @@
-#include <stdio.h>
-#include <string.h>
+#include "../../helper.h"
 
-int min(int x, int y) {
-    return (x <= y) ? x : y;
-}
 
-int min_of_three(int x, int y, int z) {
-    return (x < y) ? min(x, z) : min(y, z);
-}
-
-int calculate(char *a, char *b, size_t i, size_t j) {
-    if (i == 0) {
-        return j;
+int calculate(char *a, char *b, size_t m, size_t n) {
+    if (m == 0) {
+        return n;
     }
-    if (j == 0) {
-        return i;
+    if (n == 0) {
+        return m;
     }
-    int cost = (a[i-1] == b[j-1]) ? 0 : 1;
+
+    int cost = (a[m-1] == b[n-1]) ? 0 : 1;
     
     int res = min_of_three(
-        calculate(a, b, i - 1, j) + 1,
-        calculate(a, b, i, j - 1) + 1,
-        calculate(a, b, i - 1, j - 1) + cost
+        calculate(a, b, m - 1, n) + 1,
+        calculate(a, b, m, n - 1) + 1,
+        calculate(a, b, m - 1, n - 1) + cost
     );
 
     return res;

@@ -1,8 +1,4 @@
-#include "../../../helper.h"
-int calculate(char *a, char *b) {
-    int m = strlen(a);
-    int n = strlen(b);
-
+int iterative(char *a, char *b, int m, int n, int num_threads) {
     if(is_trivial(m, n)) {
         return get_trivial_result(m, n);
     }
@@ -27,10 +23,9 @@ int calculate(char *a, char *b) {
 }
 
 
-int main() {
+/*int main() {
     char a[] = {'M', 'a', 'c', 'k', 'a', '\0'};
     char b[] = {'T', 'a', 'c', 'k', 'a', 's', 't', '\0'};
-    int levenshtein_distance = calculate(a, b);
-    printf("Levenshtein distance for strings %s and %s: %d\n", a, b, levenshtein_distance);
+    benchmark(a, b, iterative, strlen(a), strlen(b), 4);
     return 0;
-}
+}*/

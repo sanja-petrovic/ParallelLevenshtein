@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
+#include <omp.h>
+
 
 int min(int x, int y) {
     return (x <= y) ? x : y;
@@ -69,13 +72,22 @@ int get_trivial_result(int m, int n) {
 }
 
 int get_index(char letter, char *characters) {
-  int index = -1;
+    int index = -1;
 
-  for (int i = 0; i < strlen(characters); i++) {
-    if (characters[i] == letter) {
-      index = i;
-      break;
+    for (int i = 0; i < strlen(characters); i++) {
+        if (characters[i] == letter) {
+        index = i;
+        break;
+        }
     }
-  }
-  return index;
+    return index;
+}
+
+void benchmark(char *a, char *b, int (*f)(char *, char *, int, int, int), int m, int n, int num_threads) {
+    clock_t start = clock();
+    int distance = f(a, b, m, n, num_threads);
+    clock_t stop = clock();
+    double t = (double)(stop - start) / CLOCKS_PER_SEC;
+    printf("Execution time is : %f \n", t);
+    printf("Levenshtein distance for strings %s and %s: %d\n", a, b, distance);
 }

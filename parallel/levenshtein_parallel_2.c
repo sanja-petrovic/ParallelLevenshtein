@@ -1,12 +1,13 @@
-#include "../helper.h"
 
-int calculate(char *a, char *b) {
+#include <omp.h>
+int parallel_table(char *a, char *b, int m, int n, int num_threads) {
+    if(is_trivial(m, n)) {
+        return get_trivial_result(m, n);
+    }
     // Део I - поставка
     // Креирање ASCII хеш табеле зa праћење карактера у стрингу а
     // Касније, ово се користи за креирање низа јединствених карактера у стрингу а
     int j = 0, last_match_index;
-    int m = strlen(a);
-    int n = strlen(b);
     int unique_count_a = 0;
     char *unique_characters_a = malloc(sizeof(int) * (unique_count_a + 1));
     int unique_iterator = 0;
@@ -33,7 +34,7 @@ int calculate(char *a, char *b) {
 
     // Део II - Креирање табеле индекса поклапања (Match Index Table)
     // узевши у обзир јединствен број карактера у првом стрингу и n карактера у другом стрингу
-    #pragma omp parallel
+    #pragma omp parallel num_threads(num_threads)
     {
         #pragma omp parallel for
         for (int i = 0; i < unique_count_a; i++) {
@@ -81,10 +82,9 @@ int calculate(char *a, char *b) {
     return return_val;
 }
 
-int main() {
+/*int main() {
     char a[] = {'M', 'a', 'c', 'k', 'a', '\0'};
     char b[] = {'T', 'a', 'c', 'k', 'a', 's', 't', '\0'};
-    int levenshtein_distance = calculate(a, b);
-    printf("Levenshtein distance for strings %s and %s: %d\n", a, b, levenshtein_distance);
+    benchmark(a, b, parallel_table, strlen(a), strlen(b), 4);
     return 0;
-}
+}*/

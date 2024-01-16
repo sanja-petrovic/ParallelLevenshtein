@@ -1,35 +1,18 @@
-#include <stdio.h>
-#include <string.h>
-#include "../helper.h"
 
-int calculate(char *a, char *b) {
-    int m = strlen(a);
-    int n = strlen(b);
-
-    int matrix[m + 1][n + 1];
-    if (m == 0) {
-        return n;
+int parallel_diagonal(char *a, char *b, int m, int n, int num_threads) {
+    if(is_trivial(m, n)) {
+        return get_trivial_result(m, n);
     }
-    if (n == 0) {
-        return m;
-    }
-
-    #pragma omp parallel for
-    for (int i = 0; i <= m; i++) {
-        matrix[i][0] = i;
-    }
-
-    #pragma omp parallel for
-    for (int j = 0; j <= n; j++) {
-        matrix[0][j] = j;
-    }
+    
+    int **matrix = create_matrix(m + 1, n + 1);
+    matrix = fill_initial_values_parallel(matrix, m + 1, n + 1);
 
     for (int i = 1; i <= m + n; i++) {
-        #pragma omp parallel for firstprivate(i)
+        #pragma omp parallel for
         for (int j = i - 1; j >= 1; j--) {
             int y = i - j;
             int x = j;
-            if (x <= n && y <= m) {
+            if (x <= m && y <= n) {
                 int cost = (a[y - 1] == b[x - 1]) ? 0 : 1;
                 matrix[x][y] = min_of_three(
                         matrix[x - 1][y] + 1, 
@@ -40,13 +23,12 @@ int calculate(char *a, char *b) {
         }
     }
 
-    return matrix[n][m];
+    return matrix[m][n];
 }
 
-int main() {
+/*int main() {
     char a[] = {'M', 'a', 'c', 'k', 'a', '\0'};
     char b[] = {'T', 'a', 'c', 'k', 'a', 's', 't', '\0'};
-    int levenshtein_distance = calculate(a, b);
-    printf("Levenshtein distance for strings %s and %s: %d\n", a, b, levenshtein_distance);
+    benchmark(a, b, parallel_diagonal, strlen(a), strlen(b), 4);
     return 0;
-}
+}*/

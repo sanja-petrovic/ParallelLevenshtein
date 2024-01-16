@@ -24,8 +24,8 @@ int calculate(char *a, char *b) {
         matrix[0][j] = j;
     }
 
-    for (int i = 2; i <= m + n; i++) {
-        #pragma omp parallel for firstprivate(i) shared(matrix)
+    for (int i = 1; i <= m + n; i++) {
+        #pragma omp parallel for firstprivate(i)
         for (int j = i - 1; j >= 1; j--) {
             int y = i - j;
             int x = j;

@@ -2,11 +2,8 @@
 
 
 int calculate(char *a, char *b, size_t m, size_t n) {
-    if (m == 0) {
-        return n;
-    }
-    if (n == 0) {
-        return m;
+    if(is_trivial(m, n)) {
+        return get_trivial_result(m, n);
     }
 
     int cost = (a[m-1] == b[n-1]) ? 0 : 1;

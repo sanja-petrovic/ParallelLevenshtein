@@ -1,24 +1,14 @@
 #include "../../../helper.h"
-
 int calculate(char *a, char *b) {
     int m = strlen(a);
     int n = strlen(b);
 
-    int matrix[m + 1][n + 1];
-    if (m == 0) {
-        return n;
-    }
-    if (n == 0) {
-        return m;
+    if(is_trivial(m, n)) {
+        return get_trivial_result(m, n);
     }
 
-    for (int i = 0; i <= m; i++) {
-        matrix[i][0] = i;
-    }
-
-    for (int j = 0; j <= n; j++) {
-        matrix[0][j] = j;
-    }
+    int **matrix = create_matrix(m + 1, n + 1);
+    matrix = fill_initial_values(matrix, m + 1, n + 1);
 
     for (int i = 1; i <= m; i++) {
         for (int j = 1; j <= n; j++) {
@@ -31,8 +21,11 @@ int calculate(char *a, char *b) {
         }
     }
 
-    return matrix[m][n];
+    int result = matrix[m][n];
+    free_matrix(matrix, m + 1);
+    return result;
 }
+
 
 int main() {
     char a[] = {'M', 'a', 'c', 'k', 'a', '\0'};

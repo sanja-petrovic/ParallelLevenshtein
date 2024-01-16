@@ -6,20 +6,17 @@ int calculate(char *a, char *b) {
     int m = strlen(a);
     int n = strlen(b);
 
-    if (m == 0) {
-        return n;
+    if(is_trivial(m, n)) {
+        return get_trivial_result(m, n);
     }
 
-    if (n == 0) {
-        return m;
-    }
-
-    int previous[n + 1];
-    int current[n + 1];
+    int *previous = create_array(n + 1);
+    int *current = create_array(n + 1);
 
     for (int j = 0; j <= n; j++) {
         previous[j] = j;
     }
+
 
     for (int i = 1; i <= m; i++) {
         current[0] = i;
@@ -31,10 +28,16 @@ int calculate(char *a, char *b) {
                 previous[j - 1] + cost
             );
         }
-        memcpy(previous, current, sizeof previous);
+        for (int j = 0; j <= n; j++) {
+            previous[j] = current[j];
+        }
     }
 
-    return current[n];
+    int result = current[n];
+    free(current);
+    free(previous);
+
+    return result;
 }
 
 int main() {

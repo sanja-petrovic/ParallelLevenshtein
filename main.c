@@ -5,16 +5,24 @@
 #include "parallel/levenshtein_parallel.c"
 #include "parallel/levenshtein_parallel_2.c"
 
-const int NUM_THREADS = 8;
+int test(char *a, char *b, int m, int n, int num_threads) {
+    //benchmark(a, b, recursive, strlen(a), strlen(b), num_threads, "r");
+    benchmark(a, b, iterative, strlen(a), strlen(b), num_threads, "i");
+    benchmark(a, b, iterative_optimized, strlen(a), strlen(b), num_threads, "i_o");
+    benchmark(a, b, parallel_diagonal, strlen(a), strlen(b), num_threads, "p_d");
+    benchmark(a, b, parallel_table, strlen(a), strlen(b), num_threads, "p_t");
+}
 
 int main(int argc, char **argv) {
-    char a[] = {'M', 'a', 'c', 'k', 'a', '\0'};
-    char b[] = {'T', 'a', 'c', 'k', 'a', 's', 't', '\0'};
-    benchmark(a, b, recursive, strlen(a), strlen(b), NUM_THREADS);
-    benchmark(a, b, iterative, strlen(a), strlen(b), NUM_THREADS);
-    benchmark(a, b, iterative_optimized, strlen(a), strlen(b), NUM_THREADS);
-    benchmark(a, b, parallel_diagonal, strlen(a), strlen(b), NUM_THREADS);
-    benchmark(a, b, parallel_table, strlen(a), strlen(b), NUM_THREADS);
+    FILE *in = fopen(argv[3], "r");
+    int m = atoi(argv[1]);
+    int n = atoi(argv[2]);
+    int num_threads = atoi(argv[4]);
+    char a[m];
+    char b[n];
+    fscanf(in, "%s %s", a, b);
+    fclose(in);
+    test(a, b, m, n, num_threads);
 
     return 0;
 }

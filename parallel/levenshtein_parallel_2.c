@@ -9,7 +9,6 @@ int parallel_table(char *a, char *b, int m, int n, int num_threads) {
     // Касније, ово се користи за креирање низа јединствених карактера у стрингу а
     int j = 0, last_match_index;
     int unique_count_a = 0;
-    char *unique_characters_a = malloc(sizeof(int) * (unique_count_a + 1));
     int unique_iterator = 0;
 
     int ascii_hash_table[128] = {0};
@@ -22,6 +21,7 @@ int parallel_table(char *a, char *b, int m, int n, int num_threads) {
         unique_count_a += ascii_hash_table[i];
     }
 
+    char *unique_characters_a = malloc(sizeof(int) * (unique_count_a + 1));
     for (int i = 0; i < 128; ++i) {
         if (ascii_hash_table[i] == 1) {
         unique_characters_a[unique_iterator++] = i;

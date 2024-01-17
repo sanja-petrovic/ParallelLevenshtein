@@ -57,7 +57,7 @@ int** fill_initial_values_parallel(int **matrix, int m, int n) {
 }
 
 void free_matrix(int** matrix, int m) {
-    for (int i = 0; i < (m); i++) {
+    for (int i = 0; i < m; i++) {
         free(matrix[i]);
     }
     free(matrix);
@@ -83,11 +83,10 @@ int get_index(char letter, char *characters) {
     return index;
 }
 
-void benchmark(char *a, char *b, int (*f)(char *, char *, int, int, int), int m, int n, int num_threads) {
+void benchmark(char *a, char *b, int (*f)(char *, char *, int, int, int), int m, int n, int num_threads, char *id) {
     clock_t start = clock();
     int distance = f(a, b, m, n, num_threads);
     clock_t stop = clock();
     double t = (double)(stop - start) / CLOCKS_PER_SEC;
-    printf("Execution time is : %f \n", t);
-    printf("Levenshtein distance for strings %s and %s: %d\n", a, b, distance);
+    printf("%s-%f:%d;", id, t, distance);
 }

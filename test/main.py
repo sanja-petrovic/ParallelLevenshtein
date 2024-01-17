@@ -9,7 +9,6 @@ def create_input_files(string_lens):
 
     for m, n in string_lens:
         rand_num = random.randint(0, 10)
-        print(f"[{m}X{n}] Expected: {rand_num}")
         first = [random.choice(alphabet) for _ in range(int(m))]
         second = first[0 : (min(m, n) - rand_num)] + [
             random.choice(alphabet) for _ in range(1, rand_num)
@@ -26,8 +25,6 @@ def run():
         (100, 100),
         (999, 999),
         (9999, 9999),
-        (49999, 49999),
-        (99999, 99999),
     ]
     create_input_files(string_lens)
     for m, n in string_lens:

@@ -5,25 +5,40 @@ int parallel_diagonal(char *a, char *b, int m, int n, int num_threads) {
     }
     
     int **matrix = create_matrix(m + 1, n + 1);
-    matrix = fill_initial_values_parallel(matrix, m + 1, n + 1);
+    omp_set_num_threads(num_threads);
 
-    for (int i = 1; i <= m + n; i++) {
-        #pragma omp parallel for
-        for (int j = i - 1; j >= 1; j--) {
-            int y = i - j;
-            int x = j;
-            if (x <= m && y <= n) {
-                int cost = (a[y - 1] == b[x - 1]) ? 0 : 1;
-                matrix[x][y] = min_of_three(
-                        matrix[x - 1][y] + 1, 
-                        matrix[x][y - 1] + 1,
-                        matrix[x - 1][y - 1] + cost
-                );
+    #pragma omp parallel 
+    {
+        #pragma omp for nowait
+        for (int i = 0; i < m; i++) {
+            matrix[i][0] = i;
+        }
+
+        #pragma omp for
+        for (int j = 0; j < n; j++) {
+            matrix[0][j] = j;
+        }
+        for (int i = 1; i <= m + n; i++) {
+            #pragma omp for schedule(static, 24)
+            for (int j = i - 1; j >= 1; j--) {
+                int y = i - j;
+                int x = j;
+                if (x <= m && y <= n) {
+                    int cost = (a[y - 1] == b[x - 1]) ? 0 : 1;
+                    matrix[x][y] = min_of_three(
+                            matrix[x - 1][y] + 1, 
+                            matrix[x][y - 1] + 1,
+                            matrix[x - 1][y - 1] + cost
+                    );
+                }
             }
         }
     }
+    
+    int res = matrix[m][n];
+    free_matrix(matrix, m + 1);
 
-    return matrix[m][n];
+    return res;
 }
 
 /*int main() {

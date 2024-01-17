@@ -84,9 +84,9 @@ int get_index(char letter, char *characters) {
 }
 
 void benchmark(char *a, char *b, int (*f)(char *, char *, int, int, int), int m, int n, int num_threads, char *id) {
-    clock_t start = clock();
+    double start = omp_get_wtime();
     int distance = f(a, b, m, n, num_threads);
-    clock_t stop = clock();
-    double t = (double)(stop - start) / CLOCKS_PER_SEC;
+    double stop = omp_get_wtime();
+    double t = stop - start;
     printf("%s-%f:%d;", id, t, distance);
 }

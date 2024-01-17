@@ -8,7 +8,7 @@ def create_input_files(string_lens):
     alphabet = "abcdefghijklmnopqrstuvwxyz"
 
     for m, n in string_lens:
-        rand_num = random.randint(0, 10)
+        rand_num = random.randint(0, n // 2)
         first = [random.choice(alphabet) for _ in range(int(m))]
         second = first[0 : (min(m, n) - rand_num)] + [
             random.choice(alphabet) for _ in range(1, rand_num)
@@ -25,6 +25,8 @@ def run():
         (100, 100),
         (999, 999),
         (9999, 9999),
+        (49999, 49999),
+        (99999, 99999),
     ]
     create_input_files(string_lens)
     for m, n in string_lens:

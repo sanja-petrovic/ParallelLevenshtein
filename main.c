@@ -6,11 +6,11 @@
 #include "parallel/levenshtein_parallel_2.c"
 
 int test(char *a, char *b, int m, int n, int num_threads) {
-    //benchmark(a, b, recursive, strlen(a), strlen(b), num_threads, "r");
-    benchmark(a, b, iterative, strlen(a), strlen(b), num_threads, "i");
-    benchmark(a, b, iterative_optimized, strlen(a), strlen(b), num_threads, "i_o");
-    benchmark(a, b, parallel_diagonal, strlen(a), strlen(b), num_threads, "p_d");
-    benchmark(a, b, parallel_table, strlen(a), strlen(b), num_threads, "p_t");
+    //benchmark(a, b, recursive, m, n, num_threads, "r");
+    benchmark(a, b, iterative, m, n, num_threads, "i");
+    benchmark(a, b, iterative_optimized, m, n, num_threads, "i_o");
+    benchmark(a, b, parallel_diagonal, m, n, num_threads, "p_d");
+    benchmark(a, b, parallel_table, m, n, num_threads, "p_t");
 }
 
 int main(int argc, char **argv) {

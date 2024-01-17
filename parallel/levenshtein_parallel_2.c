@@ -10,33 +10,38 @@ int parallel_table(char *a, char *b, int m, int n, int num_threads) {
     int j = 0, last_match_index;
     int unique_count_a = 0;
     int unique_iterator = 0;
+    char *unique_characters_a;
+    int **match_index_table;
 
     int ascii_hash_table[128] = {0};
-    
-    for (int i = 0; i < m; ++i) {
-        ascii_hash_table[a[i]] = 1;
-    }
+    int **matrix = create_matrix(m + 1, n + 1);  
 
-    for (int i = 0; i < 128; ++i) {
-        unique_count_a += ascii_hash_table[i];
-    }
 
-    char *unique_characters_a = malloc(sizeof(int) * (unique_count_a + 1));
-    for (int i = 0; i < 128; ++i) {
-        if (ascii_hash_table[i] == 1) {
-        unique_characters_a[unique_iterator++] = i;
-        }
-    }
-    unique_characters_a[unique_iterator] = '\0';
-
-    int **match_index_table = create_matrix(unique_count_a + 1, n + 1);
-    int **matrix = create_matrix(m + 1, n + 1);
 
     // Део II - Креирање табеле индекса поклапања (Match Index Table)
     // узевши у обзир јединствен број карактера у првом стрингу и n карактера у другом стрингу
     #pragma omp parallel num_threads(num_threads)
-    {
-        #pragma omp parallel for
+    {   
+        #pragma omp for
+        for (int i = 0; i < m; ++i) {
+            ascii_hash_table[a[i]] = 1;
+        }
+        #pragma omp for reduction(+ : unique_count_a)
+        for (int i = 0; i < 128; ++i) {
+            unique_count_a += ascii_hash_table[i];
+        }
+        #pragma omp single
+        {
+            unique_characters_a = malloc(sizeof(int) * (unique_count_a + 1));
+            for (int i = 0; i < 128; ++i) {
+                if (ascii_hash_table[i] == 1) {
+                unique_characters_a[unique_iterator++] = i;
+                }
+            }
+            unique_characters_a[unique_iterator] = '\0';  
+            match_index_table = create_matrix(unique_count_a + 1, n + 1);
+        }
+        #pragma omp for nowait
         for (int i = 0; i < unique_count_a; i++) {
             for (int j = 0; j < n; j++) {
                 if (b[j] == unique_characters_a[i]) { 
@@ -48,13 +53,19 @@ int parallel_table(char *a, char *b, int m, int n, int num_threads) {
                 }
             }
         }
-        #pragma omp barrier
-        matrix = fill_initial_values_parallel(matrix, m + 1, n + 1);
-        #pragma omp barrier
+        #pragma omp for nowait
+        for (int i = 0; i < m; i++) {
+            matrix[i][0] = i;
+        }
+
+        #pragma omp for
+        for (int j = 0; j < n; j++) {
+            matrix[0][j] = j;
+        }
         // Део III - Рачунање Левенштајновог растојања користећи матрицу, слично као по Вагнер-Фишеровом алгоритму
         for (int i = 1; i <= m; i++) {
             int ind = get_index(a[i - 1], unique_characters_a); // индекс карактера а у табели јединствености
-            #pragma omp parallel for
+            #pragma omp for private(j)
             for (j = 1; j <= n; j++) {
                 int last_match_index = match_index_table[ind][j - 1] + 1; // индекс на коме се налазило последње поклапање за овај карактер
                 if (j == last_match_index) { // случај 1: тренутно поклапање
@@ -73,6 +84,8 @@ int parallel_table(char *a, char *b, int m, int n, int num_threads) {
             }
         }
     }
+
+    
 
     free(unique_characters_a);
     int return_val = matrix[m][n];
